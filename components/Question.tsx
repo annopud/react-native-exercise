@@ -1,14 +1,15 @@
 import {
   Alert,
   FlatList,
+  Platform,
+  Pressable,
   StyleSheet,
   Text,
-  TouchableHighlight,
   TouchableOpacity,
   View,
 } from "react-native";
 import { generateRamdomQuestion, QuestionChoice } from "@/utils/Question";
-import { useEffect, useReducer } from "react";
+import { useReducer } from "react";
 import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
 import Checkbox from "expo-checkbox";
@@ -28,7 +29,6 @@ const questionRenderer = (
         <TouchableOpacity
           key={answer.id}
           onPress={() => {
-            console.log("question", question.id);
             answerListStateDispatch({
               questionId: question.id,
               choiceId: answer.id,
@@ -40,8 +40,7 @@ const questionRenderer = (
           <View style={styles.choice}>
             <Checkbox value={answer.selected ?? false}></Checkbox>
             <ThemedText style={{ flexShrink: 1 }}>
-              {String.fromCharCode(65 + answerIndex)}. {answer.text} ++
-              {answer.selected ? "selected" : "not selected"}
+              {String.fromCharCode(65 + answerIndex)}. {answer.text}
             </ThemedText>
           </View>
         </TouchableOpacity>
@@ -56,16 +55,12 @@ const reducer = (state: QuestionChoice[], action: Action) => {
   newState[questionIndex] = {
     ...state[questionIndex],
   };
-  console.log(
-    "newState[questionIndex].choiceList[answerIndex]",
-    newState[questionIndex].choiceList[answerIndex]
-  );
+
   newState[questionIndex].choiceList[answerIndex] = {
     ...state[questionIndex].choiceList[answerIndex],
     selected: !state[questionIndex].choiceList[answerIndex].selected,
   };
 
-  console.log("after ", newState[questionIndex].choiceList[answerIndex]);
   return newState;
 };
 
@@ -82,15 +77,22 @@ export function Question() {
     generateRamdomQuestion()
   );
 
-  const createThreeButtonAlert = () =>
-    Alert.alert("Comfirmation", "Submit your answers?", [
-      {
-        text: "Cancel",
-        onPress: () => console.log("Cancel Pressed"),
-        style: "cancel",
-      },
-      { text: "OK", onPress: () => router.replace("/") },
-    ]);
+  const createThreeButtonAlert = () => {
+    if (Platform.OS !== "web") {
+      return Alert.alert("Comfirmation", "Submit your answers?", [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        { text: "OK", onPress: () => router.replace("/") },
+      ]);
+    }
+
+    if (window.confirm("Submit your answers?")) {
+      window.location.replace(window.location.origin);
+    }
+  };
 
   return (
     <>
@@ -98,12 +100,9 @@ export function Question() {
       <ThemedView style={styles.container}>
         <FlatList
           ListFooterComponent={() => (
-            <TouchableHighlight
-              style={styles.button}
-              onPress={createThreeButtonAlert}
-            >
+            <Pressable style={styles.button} onPress={createThreeButtonAlert}>
               <Text style={styles.text}>Submit answers</Text>
-            </TouchableHighlight>
+            </Pressable>
           )}
           contentContainerStyle={{ paddingVertical: 16 }}
           style={{ paddingHorizontal: 16 }}

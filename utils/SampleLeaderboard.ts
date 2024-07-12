@@ -15,7 +15,6 @@ export interface Answer {
 }
 
 export function generateLeaderboard() {
-  console.log("generateLeaderboard");
   let leaderboard: UserScore[] = [];
 
   for (let i = 0; i < 20; i++) {

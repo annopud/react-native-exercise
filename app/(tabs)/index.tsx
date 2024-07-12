@@ -1,39 +1,45 @@
-import { StyleSheet, TouchableHighlight, View } from "react-native";
+import { StyleSheet, Pressable } from "react-native";
 
 import { ThemedView } from "@/components/ThemedView";
-import { Link } from "expo-router";
+import { router } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 
 export default function HomeScreen() {
   return (
     <ThemedView style={styles.container}>
-      <Link replace href="/question" asChild>
-        <TouchableHighlight>
-          <View style={styles.touchableLink}>
-            <ThemedText
-              type="defaultSemiBold"
-              darkColor="white"
-              lightColor="white"
-            >
-              Question
-            </ThemedText>
-          </View>
-        </TouchableHighlight>
-      </Link>
+      <Pressable
+        onPress={() => {
+          router.replace("/question");
+        }}
+        style={({ pressed }) => {
+          const backgroundColor = pressed ? "#556b2f" : "#8bc34a";
+          return {
+            ...styles.touchableLink,
+            backgroundColor,
+          };
+        }}
+      >
+        <ThemedText type="defaultSemiBold" darkColor="white" lightColor="white">
+          Question
+        </ThemedText>
+      </Pressable>
 
-      <Link href="/leaderboard" asChild>
-        <TouchableHighlight>
-          <View style={styles.touchableLink}>
-            <ThemedText
-              type="defaultSemiBold"
-              darkColor="white"
-              lightColor="white"
-            >
-              Leaderboard
-            </ThemedText>
-          </View>
-        </TouchableHighlight>
-      </Link>
+      <Pressable
+        onPress={() => {
+          router.navigate("/leaderboard");
+        }}
+        style={({ pressed }) => {
+          const backgroundColor = pressed ? "#556b2f" : "#8bc34a";
+          return {
+            ...styles.touchableLink,
+            backgroundColor,
+          };
+        }}
+      >
+        <ThemedText type="defaultSemiBold" darkColor="white" lightColor="white">
+          Leaderboard
+        </ThemedText>
+      </Pressable>
     </ThemedView>
   );
 }
@@ -47,9 +53,9 @@ const styles = StyleSheet.create({
   },
   touchableLink: {
     alignItems: "center",
-    backgroundColor: "#556b2f",
     padding: 10,
     borderRadius: 4,
     elevation: 3,
+    backgroundColor: "#8bc34a",
   },
 });
